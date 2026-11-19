@@ -1,0 +1,54 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <!-- v0.8.0：メイン ウィンドウは Windows Forms、ダイアログは WPF。入口は Program.Main -->
+    <StartupObject>Memopad.Program</StartupObject>
+    <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
+    <ApplicationVisualStyles>true</ApplicationVisualStyles>
+    <ApplicationUseCompatibleTextRendering>false</ApplicationUseCompatibleTextRendering>
+    <AssemblyName>MemoPad</AssemblyName>
+    <!-- アイコンはユーザー提供のデザイン（クリーム色の文書に緑の罫線）。v0.8.0 で差し替え -->
+    <ApplicationIcon>memopad.ico</ApplicationIcon>
+    <RootNamespace>Memopad</RootNamespace>
+    <Version>0.10.1</Version>
+    <Product>MemoPad</Product>
+    <Description>背景色と文字色を変えられるメモ帳</Description>
+    <Copyright>mrgarita</Copyright>
+    <!-- WPF0001：.NET 9 の Fluent テーマ（ThemeMode）は実験的 API 扱いのため警告を抑止する -->
+    <NoWarn>$(NoWarn);WPF0001</NoWarn>
+    <SatelliteResourceLanguages>ja</SatelliteResourceLanguages>
+    <!-- 発行時にアプリ本体も事前コンパイル（ReadyToRun）し、起動時の JIT を減らす（v0.7.0）。
+         フレームワークまで一体化する複合（Composite）は初回起動が大きく遅くなるので使わない -->
+    <PublishReadyToRun>true</PublishReadyToRun>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- UseWindowsForms が暗黙に足す using は WPF の型名（Color, TextBox など）と衝突するので外す。
+         Windows Forms の型は ColorPicker などで完全修飾して使う -->
+    <Using Remove="System.Windows.Forms" />
+    <Using Remove="System.Drawing" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- ANSI（Shift_JIS, cp932）の読み書きに必要 -->
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="10.0.11" />
+    <!-- 本文のエディタ。v0.10.0 で RichEdit から Scintilla に替えた（FB-19）。
+         RichEdit は日本語と英字が混ざる行のレイアウトが極端に遅く、大きなファイルで画面が固まる。
+         Scintilla は同じ計算を空き時間に細切れで行うので止まらない（docs/site/step3 の 15 節） -->
+    <PackageReference Include="Scintilla5.NET" Version="7.0.0" />
+  </ItemGroup>
+
+  <!-- MemoPad 增强（单文件便携版）：Scintilla 原生库内嵌为资源，启动时缺则自动释放到
+       exe 同级 runtimes\win-x64\native\（Scintilla.NET 硬性要求该相对路径，无法打进 exe） -->
+  <ItemGroup>
+    <EmbeddedResource Include="native\Scintilla.dll" LogicalName="Memopad.Native.Scintilla.dll" />
+    <EmbeddedResource Include="native\Lexilla.dll" LogicalName="Memopad.Native.Lexilla.dll" />
+  </ItemGroup>
+
+</Project>

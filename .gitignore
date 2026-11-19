@@ -1,0 +1,18 @@
+# --- .NET 构建产物 ---
+bin/
+obj/
+[Pp]ublish/
+*.user
+*.suo
+*.pdb
+
+# --- 日志与诊断 ---
+*.log
+
+# --- IDE / OS ---
+.vs/
+.idea/
+Thumbs.db
+Desktop.ini
+
+# 注意：native/ 下的 Scintilla.dll / Lexilla.dll 是编译所需的内嵌原生库，纳入版本管理，勿忽略。
